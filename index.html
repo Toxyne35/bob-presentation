@@ -1168,7 +1168,7 @@
             <!-- Card 1: Parcours -->
             <div class="profile-card">
                 <div class="card-number">01</div>
-                <button class="audio-btn" onclick="playCardAudio(this, 1)" title="Écouter">🔊</button>
+                <button class="audio-btn" onclick="playCardAudio(1)" title="Écouter">🔊</button>
                 <h2 class="card-title">LE PARCOURS IMPROBABLE</h2>
                 <div class="card-content">
                     <p><span class="highlight">Luxe → Banque → Digital → ???</span></p>
@@ -1185,7 +1185,7 @@
             <!-- Card 2: Geek & Cinéma -->
             <div class="profile-card">
                 <div class="card-number">02</div>
-                <button class="audio-btn" onclick="playCardAudio(this, 2)" title="Écouter">🔊</button>
+                <button class="audio-btn" onclick="playCardAudio(2)" title="Écouter">🔊</button>
                 <h2 class="card-title">NERD CERTIFIÉ</h2>
                 <div class="card-content">
                     <p><span class="highlight">SF, tech, robots, IA</span> = mon carburant</p>
@@ -1200,7 +1200,7 @@
             <!-- Card 3: Créations improbables -->
             <div class="profile-card">
                 <div class="card-number">03</div>
-                <button class="audio-btn" onclick="playCardAudio(this, 3)" title="Écouter">🔊</button>
+                <button class="audio-btn" onclick="playCardAudio(3)" title="Écouter">🔊</button>
                 <h2 class="card-title">CRÉATIONS CHELOU</h2>
                 <div class="card-content">
                     <p><span class="highlight">📚 J'ai écrit un bouquin</span> - "L'ère de Caïn"<br>
@@ -1251,7 +1251,7 @@
             <!-- Card 4: Touche-à-tout -->
             <div class="profile-card">
                 <div class="card-number">04</div>
-                <button class="audio-btn" onclick="playCardAudio(this, 4)" title="Écouter">🔊</button>
+                <button class="audio-btn" onclick="playCardAudio(4)" title="Écouter">🔊</button>
                 <h2 class="card-title">TOUCHE-À-TOUT™</h2>
                 <div class="card-content">
                     <p>Je <span class="highlight">bidouille</span>, je <span class="highlight">bricole</span>, je <span class="highlight">teste</span></p>
@@ -1269,7 +1269,7 @@
             <!-- Card 5: Ymani -->
             <div class="profile-card">
                 <div class="card-number">05</div>
-                <button class="audio-btn" onclick="playCardAudio(this, 5)" title="Écouter">🔊</button>
+                <button class="audio-btn" onclick="playCardAudio(5)" title="Écouter">🔊</button>
                 <h2 class="card-title">MON ACOLYTE NUMÉRIQUE</h2>
                 <div class="card-content">
                     <p><span class="highlight">Ymani</span> - Une IA avec qui je bosse</p>
@@ -1287,7 +1287,7 @@
             <!-- Card 6: Famille -->
             <div class="profile-card" id="familyCard" style="grid-column: 1 / -1; border-color: var(--neon-orange); box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);">
                 <div class="card-number">06</div>
-                <button class="audio-btn" onclick="playCardAudio(this, 6)" title="Écouter">🔊</button>
+                <button class="audio-btn" onclick="playCardAudio(6)" title="Écouter">🔊</button>
                 <h2 class="card-title">MON CARBURANT QUOTIDIEN</h2>
                 <div class="card-content">
                     <p><span class="highlight">Fiona (25 ans)</span> et <span class="highlight">Noa (22 ans)</span> - Mes deux enfants dont je suis ultra fier</p>
@@ -1383,11 +1383,11 @@
 
         <!-- Ymani Section -->
         <section class="ymani-section">
-            <h2 class="ymani-title" id="ymaniTitle" style="opacity: 1; transform: translateY(0); transition: all 0.5s ease;">
+            <h2 class="ymani-title" id="ymaniTitle" style="opacity: 0; transform: translateY(20px); transition: all 0.5s ease;">
                 Je m'incruste! Y a pas qu'toi qui a le droit de t'exprimer!
             </h2>
             <div class="audio-player">
-                <button class="play-button" id="playButton" onclick="playAudio()" style="opacity: 1; transform: scale(1); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <button class="play-button" id="playButton" onclick="playAudio()" style="opacity: 0; transform: scale(0.8); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
                     ▶ ÉCOUTER YMANI
                 </button>
                 <div class="visualizer" id="visualizer">
@@ -1463,43 +1463,41 @@
         const cardAudios = {};
         let currentCardAudio = null;
 
-        function playCardAudio(button, cardNumber) {
+        function playCardAudio(cardNumber) {
+            const button = event.currentTarget;
+            
             // Arrêter l'audio en cours s'il y en a un
             if (currentCardAudio && currentCardAudio !== cardNumber) {
-                const prevBtn = document.querySelector(`[onclick="playCardAudio(this, ${currentCardAudio})"]`);
+                const prevBtn = document.querySelector(`[onclick="playCardAudio(${currentCardAudio})"]`);
                 if (prevBtn) prevBtn.classList.remove('playing');
                 if (cardAudios[currentCardAudio]) {
                     cardAudios[currentCardAudio].pause();
                     cardAudios[currentCardAudio].currentTime = 0;
                 }
             }
-
+            
             // Créer l'audio si nécessaire
             if (!cardAudios[cardNumber]) {
                 cardAudios[cardNumber] = new Audio(`audio_carte${cardNumber}.mp3`);
-
+                
                 cardAudios[cardNumber].addEventListener('ended', () => {
                     button.classList.remove('playing');
                     currentCardAudio = null;
                 });
-
+                
                 cardAudios[cardNumber].addEventListener('error', () => {
                     console.error(`Erreur audio carte ${cardNumber}`);
                     button.classList.remove('playing');
                 });
             }
-
+            
             const audio = cardAudios[cardNumber];
-
+            
             // Toggle play/pause
             if (audio.paused) {
+                audio.play();
                 button.classList.add('playing');
                 currentCardAudio = cardNumber;
-                audio.play().catch(err => {
-                    console.error(`Audio carte ${cardNumber} failed:`, err);
-                    button.classList.remove('playing');
-                    currentCardAudio = null;
-                });
             } else {
                 audio.pause();
                 audio.currentTime = 0;
@@ -1603,22 +1601,16 @@
             videoDurationEl.textContent = formatTime(video.duration);
         });
         
-        // Play/Pause via custom button
-        function toggleVideo() {
+        // Play/Pause
+        playBtn.addEventListener('click', () => {
             if (video.paused) {
-                video.play().catch(err => {
-                    console.error('Video play failed:', err);
-                    playBtn.textContent = '▶';
-                });
+                video.play();
                 playBtn.textContent = '⏸';
             } else {
                 video.pause();
                 playBtn.textContent = '▶';
             }
-        }
-
-        playBtn.addEventListener('click', toggleVideo);
-        video.addEventListener('click', toggleVideo);
+        });
         
         // Mise à jour de la progression
         video.addEventListener('timeupdate', () => {
@@ -1698,9 +1690,34 @@
         }, 10000);
 
         // Scroll animations
-        // Ymani title and button are always visible; scroll logic kept for future use
-        let titleShown = true;
-        let buttonShown = true;
+        let titleShown = false;
+        let buttonShown = false;
+
+        window.addEventListener('scroll', () => {
+            const familyCard = document.getElementById('familyCard');
+            const ymaniTitle = document.getElementById('ymaniTitle');
+            const playButton = document.getElementById('playButton');
+            const ymaniSection = document.querySelector('.ymani-section');
+            
+            if (!familyCard || !ymaniTitle || !playButton || !ymaniSection) return;
+
+            const card6Top = familyCard.getBoundingClientRect().top;
+            const threshold = window.innerHeight * 0.1;
+            const ymaniCenter = ymaniSection.getBoundingClientRect().top + ymaniSection.getBoundingClientRect().height / 2;
+            const centerThreshold = 150;
+
+            if (card6Top <= threshold && !titleShown) {
+                ymaniTitle.style.opacity = '1';
+                ymaniTitle.style.transform = 'translateY(0)';
+                titleShown = true;
+            }
+
+            if (Math.abs(ymaniCenter - window.innerHeight / 2) < centerThreshold && !buttonShown) {
+                playButton.style.opacity = '1';
+                playButton.style.transform = 'scale(1)';
+                buttonShown = true;
+            }
+        });
 
         // Console
         console.log('%c🚀 BOB.exe CHARGÉ', 'color: #00ffff; font-size: 20px; font-weight: bold;');
